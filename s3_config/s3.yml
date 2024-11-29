@@ -72,3 +72,19 @@ Resources:
                   - "s3:DeleteObject"
                 Resource: 
                   - !Sub "${S3Bucket.Arn}/*"
+        - PolicyName: s3
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            # Allow describing CloudFormation stacks
+              - Effect: Allow
+                Action:
+                  - 'cloudformation:DescribeStacks'
+                Resource: '*'
+
+Outputs:
+  S3BucketName:
+    Description: "Name of the S3 bucket"
+    Value: !Ref S3Bucket
+    Export:
+      Name: !Sub "${EnvironmentName}-S3BucketName"

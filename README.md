@@ -3,40 +3,52 @@
 
 ## Spin up instructions
 
+Pre-requisite: 
+    
+    aws configure
+
 ### Powershell Scripts Commands:
 
     .\runners\create.ps1 network-udagram .\network_config\network.yml .\network_config\network-parameters.json
     .\runners\create.ps1 s3-udagram .\s3_config\s3.yml .\s3_config\s3-parameters.json
+    python .\s3_config\upload_app_to_s3.py 'Manjunath-Network-Env' 'us-east-1' 'app/'
     .\runners\create.ps1 main-udagram .\udagram_config\udagram.yml .\udagram_config\udagram-parameters.json
 
 ### Alternative Python script:
-
-Pre-requisite: 
-    
-    aws configure
 
 Execution Commands:
 
     python .\cloud_formation.py create --stack-name network-udagram --template-path ./network_config/network.yml --parameters-path ./network_config/network-parameters.json
     python .\cloud_formation.py create --stack-name s3-udagram --template-path ./s3_config/s3.yml --parameters-path ./s3_config/s3-parameters.json
+    python .\s3_config\upload_app_to_s3.py 'Manjunath-Network-Env' 'us-east-1' 'app/'
     python .\cloud_formation.py create --stack-name main-udagram --template-path ./udagram_config/udagram.yml --parameters-path ./udagram_config/udagram-parameters.json
 
 ## Tear down instructions
 ### Powershell Scripts Commands:
 
     .\runners\delete.ps1 main-udagram
+    python .\s3_config\empty_s3_bucket.py 'Manjunath-Network-Env' 'us-east-1'
     .\runners\delete.ps1 s3-udagram
     .\runners\delete.ps1 network-udagram
 
 ### Alternative Python script:
 
     python .\cloud_formation.py delete --stack-name main-udagram
+    python .\s3_config\empty_s3_bucket.py 'Manjunath-Network-Env' 'us-east-1'
     python .\cloud_formation.py delete --stack-name s3-udagram
     python .\cloud_formation.py delete --stack-name network-udagram
 
-## Other considerations
-TODO (optional)
 
+## Updates as per review (29/Nov/2024)
+
+[APP URL](http://main-u-webap-xmkancqzoowh-337266837.us-east-1.elb.amazonaws.com/) http://main-u-webap-xmkancqzoowh-337266837.us-east-1.elb.amazonaws.com/
+
+STEPS TO PROGRAMATICALLY ADD DATA FROM S3 is added:
+
+Corresponding script:
+
+    python .\s3_config\upload_app_to_s3.py 'Manjunath-Network-Env' 'us-east-1' 'app/'
+    + added logic in the WebAppLaunchTemplate
 
 ## Exercise Details
 ### 1. Architecture Diagram

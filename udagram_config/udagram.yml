@@ -61,7 +61,7 @@ Resources:
             #!/bin/bash
             # Update system packages
             sudo apt-get update -y
-
+            
             # Install AWS CLI and NGINX
             sudo apt-get install awscli -y
             sudo apt-get install nginx -y
@@ -69,21 +69,16 @@ Resources:
             # Start the NGINX service
             sudo service nginx start
 
-            # Create the custom index.html with required text
-            cat <<EOF | sudo tee /var/www/html/index.html
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Udagram</title>
-            </head>
-            <body>
-                <h1>it works! Udagram, Udacity</h1>
-                <h4> -a project by Manjunath S C P</h4>
-            </body>
-            </html>
-            EOF
+            # Define environment variables from CloudFormation parameters
+            REGION="us-east-1"
+            BUCKET_NAME="udacity-s3-udagram-static-manjunath"
+
+            # Download the files from the S3 bucket
+            aws s3 cp s3://$BUCKET_NAME/index.html /var/www/html/index.html --region $REGION
+            aws s3 cp s3://$BUCKET_NAME/error.html /var/www/html/error.html --region $REGION
+
+            sudo chmod 644 /var/www/html/index.html
+            sudo chmod 644 /var/www/html/error.html
 
             # Reload NGINX to apply changes
             sudo systemctl reload nginx
@@ -116,11 +111,17 @@ Resources:
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
-            - Effect: Allow
-              Action:
-              - 's3:GetObject'
-              Resource:
-                - !Sub "arn:aws:s3:::any-bucket-name/*"
+              # Allow describing CloudFormation stacks
+              - Effect: Allow
+                Action:
+                  - 'cloudformation:DescribeStacks'
+                Resource: '*'
+              # Allow reading objects from S3
+              - Effect: Allow
+                Action:
+                - 's3:GetObject'
+                Resource:
+                  - !Sub "arn:aws:s3:::any-bucket-name/*"
 
   WebAppInstanceProfile:
     Type: AWS::IAM::InstanceProfile
